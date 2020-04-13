@@ -15,7 +15,8 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
-    'backend_server' => env('BACKEND_SERVER', 'http://localhost:8100'),
+    //'backend_server' => env('BACKEND_SERVER', 'http://localhost:8100'),
+    'backend_server' => env('BACKEND_SERVER', 'http://nginx-private-api'),
     /*
     |--------------------------------------------------------------------------
     | Application Environment
@@ -53,7 +54,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL', 'http://api.hrstech.local'),
 
     /*
     |--------------------------------------------------------------------------

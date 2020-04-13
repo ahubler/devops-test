@@ -21,4 +21,3 @@ Route::middleware(['api'])->group(function () {
 
     Route::resource('widgets', 'WidgetController');
 });
-

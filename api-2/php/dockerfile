@@ -1,0 +1,19 @@
+FROM php:7.2.26-fpm-alpine
+
+EXPOSE 9000
+
+# Set up application code
+WORKDIR /var/www/private-api
+COPY --chown=www-data:www-data ./ .
+# Remove unneeded files.
+RUN rm -rf ./nginx ./php
+
+# Set up startup script.
+
+WORKDIR /var/www
+COPY ./php/startup.sh .
+RUN chmod u+x startup.sh && chown www-data:www-data startup.sh
+
+USER www-data
+
+ENTRYPOINT ["sh", "./startup.sh"]

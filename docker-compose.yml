@@ -1,0 +1,61 @@
+version: '3'
+services:
+
+  # Private api service
+  private-api:
+    build:
+      context: ./api-2
+      dockerfile: ./php/dockerfile
+    container_name: private-api
+    restart: unless-stopped
+    tty: true
+    volumes:
+       - ./api-2/:/var/www/private-api
+
+  # Nginx private Service
+  nginx-private-api:
+    build:
+      context: ./api-2
+      dockerfile: ./nginx/dockerfile
+    container_name: nginx-private-api
+    restart: unless-stopped
+    tty: true
+    environment:
+      UPSTREAM_SERVER: private-api:9000
+    volumes:
+      - ./api-2/:/var/www/private-api
+      - ./api-2/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./api-2/nginx/conf.d:/etc/nginx/conf.d
+      - ./api-2/nginx/nginx-site.conf:/etc/nginx/sites-available/nginx-site.conf
+
+  # Public api service.
+  public-api:
+    build:
+      context: ./api-1
+      dockerfile: ./php/dockerfile
+    container_name: public-api
+    restart: unless-stopped
+    tty: true
+    volumes:
+       - ./api-1/:/var/www/htmlpublic-api
+
+  # Nginx public Service
+  nginx-public-api:
+    build:
+      context: ./api-1
+      dockerfile: ./nginx/dockerfile
+    container_name: nginx-public-api
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      UPSTREAM_SERVER: public-api:9000
+    volumes:
+      - ./api-1/:/var/www/public-api
+      - ./api-1/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./api-1/nginx/conf.d:/etc/nginx/conf.d
+      - ./api-1/nginx/nginx-site.conf:/etc/nginx/sites-available/nginx-site.conf
+      - ./api-1/nginx/key.pem:/etc/nginx/ssl/key.pem
+      - ./api-1/nginx/cert.pem:/etc/nginx/ssl/cert.pem

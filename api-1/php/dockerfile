@@ -1,0 +1,27 @@
+FROM php:7.2.26-fpm-alpine
+
+EXPOSE 9000
+
+# Install PHP extensions
+RUN docker-php-ext-install \
+  pdo_mysql \
+  mysqli #&& \
+  docker-php-ext-enable \
+  pdo_mysql \
+  mysqli
+
+# Set up application code
+WORKDIR /var/www/public-api
+COPY --chown=www-data:www-data ./ .
+# Remove unneeded files.
+RUN rm -rf ./nginx ./php
+
+# Set up startup script.
+WORKDIR /var/www
+COPY ./php/startup.sh .
+RUN chmod u+x startup.sh
+RUN chmod u+x startup.sh && chown www-data:www-data startup.sh
+
+USER www-data
+
+ENTRYPOINT ["sh", "./startup.sh"]

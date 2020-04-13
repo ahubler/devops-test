@@ -1,0 +1,27 @@
+FROM nginx:alpine
+
+ENV UPSTREAM_SERVER 127.0.0.1:9000
+
+expose 80 443
+
+# Set up nginx config.
+COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
+COPY ./nginx/conf.d /etc/nginx/conf.d
+COPY ./nginx/nginx-site.conf /etc/nginx/sites-available/nginx-site.conf
+COPY ./nginx/dhparam.pem ./etc/nginx/ssl/dhparams.pem
+RUN rm -f /etc/nginx/conf.d/default.conf /etc/nginx/sites-available/default.conf
+
+# Set up application code.
+COPY --chown=nginx:nginx ./ /var/www/public-api
+
+# Remove unneeded files.
+RUN rm -rf /var/www/public-api/nginx /var/www/public-api/php
+
+# Set up nginx cache.
+RUN chown nginx:nginx /var/cache/nginx
+
+# Set up startup script.
+COPY ./nginx/startup.sh ./startup.sh
+RUN chmod u+x startup.sh
+
+ENTRYPOINT ["sh", "./startup.sh"]
